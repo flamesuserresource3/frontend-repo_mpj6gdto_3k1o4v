@@ -21,7 +21,7 @@ function App() {
   const activeBackend = useMemo(() => backendUrl || import.meta.env.VITE_BACKEND_URL || '', [backendUrl])
 
   const mockSummarize = (content, opts) => {
-    const base = content.replace(/\s+/g, ' ').trim()
+    const base = (content || '').replace(/\s+/g, ' ').trim()
     const limit = opts.length === 'short' ? 160 : opts.length === 'medium' ? 320 : 480
     const truncated = base.length > limit ? base.slice(0, limit - 1) + '…' : base
     const bullets = opts.bullets
@@ -103,12 +103,12 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50">
+    <div className="min-h-screen bg-neutral-950 text-white">
       <Header apiKey={apiKey} setApiKey={setApiKey} backendUrl={backendUrl} setBackendUrl={setBackendUrl} onCTAClick={() => mainRef.current?.scrollIntoView({ behavior: 'smooth' })} />
 
       <Hero onPrimary={() => mainRef.current?.scrollIntoView({ behavior: 'smooth' })} />
 
-      <main ref={mainRef} className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-6" id="how-it-works">
+      <main ref={mainRef} className="relative z-10 max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-3 gap-6" id="how-it-works">
         <div className="lg:col-span-2 space-y-6">
           <InputSection text={text} setText={setText} file={file} setFile={setFile} image={image} setImage={setImage} />
           <Controls onGenerate={handleGenerate} loading={loading} />
@@ -116,15 +116,15 @@ function App() {
         <div className="lg:col-span-1">
           <ResultPanel result={result} loading={loading} />
           {activeBackend ? (
-            <p className="mt-3 text-xs text-gray-500">Using backend: {activeBackend.replace(/\/$/, '')}/summarize</p>
+            <p className="mt-3 text-xs text-white/60">Using backend: {activeBackend.replace(/\/$/, '')}/summarize</p>
           ) : (
-            <p className="mt-3 text-xs text-gray-500">No backend connected yet. UI is running with a local preview.</p>
+            <p className="mt-3 text-xs text-white/60">No backend connected yet. UI is running with a local preview.</p>
           )}
         </div>
       </main>
 
-      <footer className="max-w-6xl mx-auto px-4 pb-10">
-        <div className="text-xs text-gray-500">
+      <footer className="relative z-10 max-w-6xl mx-auto px-4 pb-12 text-white/60">
+        <div>
           Paste text or drop a file/image, set your preferences, and generate a concise, useful summary. Connect your API in the header to run real requests.
         </div>
       </footer>
