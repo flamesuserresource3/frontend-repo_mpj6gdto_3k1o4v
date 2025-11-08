@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import Header from './components/Header'
 import InputSection from './components/InputSection'
 import Controls from './components/Controls'
 import ResultPanel from './components/ResultPanel'
+import Hero from './components/Hero'
 
 function App() {
   const [apiKey, setApiKey] = useState('')
@@ -14,6 +15,8 @@ function App() {
 
   const [result, setResult] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const mainRef = useRef(null)
 
   const activeBackend = useMemo(() => backendUrl || import.meta.env.VITE_BACKEND_URL || '', [backendUrl])
 
@@ -39,7 +42,6 @@ function App() {
 
     const combinedText = text || ''
 
-    // If a backend is configured, call it. Otherwise, use local mock for preview.
     if (activeBackend) {
       try {
         const form = new FormData()
@@ -54,7 +56,6 @@ function App() {
 
         const headers = {}
         if (apiKey) {
-          // Prefer Authorization header; many APIs also allow x-api-key.
           headers['Authorization'] = `Bearer ${apiKey}`
           headers['x-api-key'] = apiKey
         }
@@ -96,17 +97,18 @@ function App() {
       return
     }
 
-    // Fallback to mock if no backend configured
     await new Promise((r) => setTimeout(r, 600))
     setResult(mockSummarize(combinedText || (file ? `File: ${file.name}` : image ? `Image: ${image.name}` : 'No content provided.'), opts))
     setLoading(false)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <Header apiKey={apiKey} setApiKey={setApiKey} backendUrl={backendUrl} setBackendUrl={setBackendUrl} />
+    <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50">
+      <Header apiKey={apiKey} setApiKey={setApiKey} backendUrl={backendUrl} setBackendUrl={setBackendUrl} onCTAClick={() => mainRef.current?.scrollIntoView({ behavior: 'smooth' })} />
 
-      <main className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <Hero onPrimary={() => mainRef.current?.scrollIntoView({ behavior: 'smooth' })} />
+
+      <main ref={mainRef} className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-6" id="how-it-works">
         <div className="lg:col-span-2 space-y-6">
           <InputSection text={text} setText={setText} file={file} setFile={setFile} image={image} setImage={setImage} />
           <Controls onGenerate={handleGenerate} loading={loading} />
